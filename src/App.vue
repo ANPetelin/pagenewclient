@@ -5,4 +5,7 @@
 </template>
 
 <style>
+* {
+  background: rgb(218, 216, 216);
+}
 </style>

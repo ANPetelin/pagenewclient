@@ -1,6 +1,11 @@
 <template>
   <div>
-    1
+    <h1>Страница регистрации</h1>
+    <ul>
+      <li><router-link to="/address">Address</router-link></li>
+      <li><router-link to="/basicdata">Basicdata</router-link></li>
+      <li><router-link to="/passport">Passport</router-link></li>
+    </ul>    
   </div>
 </template>
 
@@ -12,3 +17,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  h1 {
+    text-align: center;
+  }
+</style>
