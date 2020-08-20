@@ -86,6 +86,18 @@ export default {
       this.$router.push("/");
     }
   },
+  mounted: function () {
+    this.$nextTick(function () {
+      if(this.newClient.address) {
+        this.index = this.newClient.address.index;
+        this.country = this.newClient.address.country;
+        this.region = this.newClient.address.region;
+        this.city = this.newClient.address.city;
+        this.street = this.newClient.address.street;
+        this.house = this.newClient.address.house;
+      }
+    })
+  }
 };
 </script>
 

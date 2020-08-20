@@ -91,6 +91,17 @@ export default {
       this.$router.push("/");
     }
   },
+  mounted: function () {
+    this.$nextTick(function () {
+      if(this.newClient.passport) {
+        this.typeDocument = this.newClient.passport.typeDocument;
+        this.series = this.newClient.passport.series;
+        this.numberDocument = this.newClient.passport.numberDocument;
+        this.issuedBy = this.newClient.passport.issuedBy;
+        this.dateOfIssue = this.newClient.passport.dateOfIssue;
+      }
+    })
+  }
 };
 </script>
 

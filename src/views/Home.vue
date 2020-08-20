@@ -7,7 +7,6 @@
       <h2 v-if="this.basic">Общие данные успешно заполнены</h2>
       <h2 v-if="this.basic">{{this.newClient.basic.surname}} {{this.newClient.basic.name}} {{this.newClient.basic.patronymic}}</h2>
       <router-link to="/basicdata" class="button">заполнить/изменить</router-link>
-      <div :class="'field'+' '+ statusBasic"></div>
     </div>
     <div :class="'datasection ' + classAddress">
       <h2 v-if="!this.address">Заполните адрес проживания</h2>
@@ -15,7 +14,6 @@
       <h2 v-if="this.address">Адрес проживания успешно заполнен</h2>
       <h2 v-if="this.address">{{this.newClient.address.city}} {{this.newClient.address.street}} {{this.newClient.address.house}}</h2>
       <router-link to="/address" class="button">заполнить/изменить</router-link>
-      <div :class="'field'+' '+ statusAddress"></div>
     </div>
     <div :class="'datasection ' + classPassport">
       <h2 v-if="!this.passport">Заполните паспортные данные</h2>
@@ -23,7 +21,6 @@
       <h2 v-if="this.passport">Данные документа удостоверяющего личность успешно заполнены</h2>
       <h2 v-if="this.passport">{{this.newClient.passport.typeDocument}} <i><small>дата выдачи</small></i> {{this.newClient.passport.dateOfIssue}}</h2>
       <router-link to="/passport" class="button">заполнить/изменить</router-link>
-      <div :class="'field'+' '+ statusPassport"></div>
     </div>
   </div>
 </template>
@@ -112,15 +109,6 @@ small {
   border: solid 2px transparent;
   box-shadow: 2px 1000px 1px #fff inset;
   background-origin: border-box;
-}
-
-.field {
-  margin-left: 30px;
-  width: 30px;
-  height: 30px;
-  background: white;
-  border: 2px solid rgb(188, 156, 255);
-  border-radius: 4px;
 }
 
 .blank {

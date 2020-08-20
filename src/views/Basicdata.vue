@@ -84,6 +84,8 @@
         </li>
       </ul>
     </div>  
+    <small v-if="!$v.clientGroups.required && $v.clientGroups.$dirty">Вы не выбрали группы</small>
+    <small v-else></small>
     <p>Выберите лечащего врача</p>
     <div class="classicField">
       <select v-model="attendingDoctor">
@@ -148,7 +150,6 @@ export default {
   },
   methods: {
     clickCheckBox() {
-      console.log(this.onClick)
       if(this.onClick) {
         this.active = '';
         this.onClick = !this.onClick;
@@ -181,6 +182,21 @@ export default {
       this.$router.push("/");
     }
   },
+  mounted: function () {
+    this.$nextTick(function () {
+      if(this.newClient.basic) {
+        this.name = this.newClient.basic.name;
+        this.surname = this.newClient.basic.surname;
+        this.patronymic = this.newClient.basic.patronymic;
+        this.birthdate = this.newClient.basic.birthdate;
+        this.numberPhone = this.newClient.basic.numberPhone;
+        this.gender = this.newClient.basic.gender;
+        this.clientGroups = this.newClient.basic.clientGroups;
+        this.attendingDoctor = this.newClient.basic.attendingDoctor;
+        this.sms = this.newClient.basic.sms;
+      }
+    })
+  }
 };
 </script>
 
@@ -331,6 +347,7 @@ small {
     border: 1px solid rgba(31, 32, 65, 0.25);    
     color: rgba(31, 32, 65, 0.75);
     font-size: 20px;
+    margin-left: 10px;
 }
 .toggle::before {
     position: absolute;
