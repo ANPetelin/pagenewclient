@@ -1,18 +1,27 @@
 <template>
   <div>
     <h1>Страница регистрации</h1>
-    <div class="datasection">
-      <h2>{{dataBasic}}</h2>
+    <div :class="'datasection ' + classBasic">
+      <h2 v-if="!this.basic">Заполните основные данные</h2>
+      <h2 v-if="!this.basic"> ... </h2>
+      <h2 v-if="this.basic">Общие данные успешно заполнены</h2>
+      <h2 v-if="this.basic">{{this.newClient.basic.surname}} {{this.newClient.basic.name}} {{this.newClient.basic.patronymic}}</h2>
       <router-link to="/basicdata" class="button">заполнить/изменить</router-link>
       <div :class="'field'+' '+ statusBasic"></div>
     </div>
-    <div class="datasection">
-      <h2>{{dataAddress}}</h2>
+    <div :class="'datasection ' + classAddress">
+      <h2 v-if="!this.address">Заполните адрес проживания</h2>
+      <h2 v-if="!this.address"> ... </h2>
+      <h2 v-if="this.address">Адрес проживания успешно заполнен</h2>
+      <h2 v-if="this.address">{{this.newClient.address.city}} {{this.newClient.address.street}} {{this.newClient.address.house}}</h2>
       <router-link to="/address" class="button">заполнить/изменить</router-link>
       <div :class="'field'+' '+ statusAddress"></div>
     </div>
-    <div class="datasection">
-      <h2>{{dataPassport}}</h2>
+    <div :class="'datasection ' + classPassport">
+      <h2 v-if="!this.passport">Заполните паспортные данные</h2>
+      <h2 v-if="!this.passport"> ... </h2>
+      <h2 v-if="this.passport">Данные документа удостоверяющего личность успешно заполнены</h2>
+      <h2 v-if="this.passport">{{this.newClient.passport.typeDocument}} <i><small>дата выдачи</small></i> {{this.newClient.passport.dateOfIssue}}</h2>
       <router-link to="/passport" class="button">заполнить/изменить</router-link>
       <div :class="'field'+' '+ statusPassport"></div>
     </div>
@@ -22,35 +31,62 @@
 <script>
 export default {
   name: "Home",
+  props: ['newClient', 'basic', 'address', 'passport'],
   data() {
     return {
-      dataBasic: "Заполните основные данные",
-      dataAddress: "Заполните адрес проживания",
-      dataPassport: "Заполните паспортные данные",
       filled: "filled",
       blank: "blank",
       statusBasic: "blank",
       statusAddress: "blank",
-      statusPassport: "filled"
+      statusPassport: "blank",
+      classBasic: '',
+      classAddress: '',
+      classPassport: ''
     };
   },
+  mounted: function () {
+    this.$nextTick(function () {
+      if(this.basic) {
+        this.classBasic = 'classFilled';
+        this.statusBasic = this.filled;
+      }
+      if(this.address) {
+        this.classAddress = 'classFilled';
+        this.statusAddress = this.filled;
+      }
+      if(this.passport) {
+        this.classPassport = 'classFilled';
+        this.statusPassport = this.filled;
+      }
+    })
+  }
 };
 </script>
 
 <style scoped>
+i {
+  background-color: transparent;
+}
 h1 {
   text-align: center;
 }
 h2 {
   text-align: center;
-  background: white;
+  background-color: transparent;
+}
+small {
+  text-align: center;
+  background-color: transparent;
 }
 .datasection {
   padding: 10px;
   height: 150px;
-  background: white;
+  background: rgb(243, 227, 227);
   border-radius: 10px;
   margin-bottom: 30px;
+}
+.classFilled {
+  background: rgb(210, 247, 213);
 }
 .button {
   margin-right: 30px;

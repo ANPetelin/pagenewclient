@@ -1,9 +1,11 @@
 <template>
   <div class="container">
     <h2>Общие данные</h2>
+    <router-link to="/" class="link">На главную</router-link>
+    <p class="smallText"><sup>*</sup>Поля обязательные для заполнения</p>
     <div class="button" @click="saveAndReturn">Сохранить данные</div>
     <hr />
-    <p>Фамилия</p>
+    <p>Фамилия<sup>*</sup></p>
     <input
       type="classicField"
       class="classicField"
@@ -13,7 +15,7 @@
     <br />
     <small v-if="$v.surname.$dirty && !$v.surname.required ">Укажите свою фамилию</small>
     <br />
-    <p>Имя</p>
+    <p>Имя<sup>*</sup></p>
     <input
       type="classicField"
       class="classicField"
@@ -27,7 +29,7 @@
     <input type="classicField" class="classicField" v-model="patronymic" />
     <br />
     <small></small>
-    <p>Дата рождения</p>
+    <p>Дата рождения<sup>*</sup></p>
     <input
       type="date"
       class="classicField data"
@@ -37,15 +39,14 @@
     <br />
     <small v-if="$v.birthdate.$dirty && !$v.birthdate.required ">Укажите дату своего рождения</small>
     <br />
-    <p>Номер телефона</p>
+    <p>Номер телефона<sup>*</sup></p>
     <input
-      type="classicField"
+      type="number"
       class="classicField"
       :class="{invalid: (!$v.numberPhone.required && 
                              !$v.numberPhone.maxLength && 
                              !$v.numberPhone.minLength && 
-                             !$v.numberPhone.numeric && 
-                             numberPhoneStartWithSeven(numberPhone))}"
+                             !$v.numberPhone.numeri)}"
       v-model.trim="numberPhone"
     />
     <br />
@@ -57,7 +58,7 @@
                       !$v.numberPhone.numeric || 
                       numberPhoneStartWithSeven(numberPhone))"
     >Ведите корректный номер телефона</small>
-    <p></p>
+    <small v-else></small>
     <p>Укажите ваш пол</p>
     <div class="radiobutton">
       <input type="radio" id="one" value="мужской" v-model="gender" />
@@ -65,38 +66,24 @@
       <input type="radio" id="two" value="женский" v-model="gender" />
       <label for="two">Женский</label>
     </div>
-    <p>Выберите свои группы</p>
-    <small v-if="$v.clientGroups.$dirty && !$v.clientGroups.required ">Выберите свои группы</small>
-    <div class="radiobutton">
-      <input type="checkbox" id="VIP" value="VIP" v-model="clientGroups" />
-      <label for="VIP">VIP</label>
-      <input type="checkbox" id="Проблемные" value="Проблемные" v-model="clientGroups" />
-      <label for="Проблемные">Проблемные</label>
-      <input type="checkbox" id="ОМС" value="ОМС" v-model="clientGroups" />
-      <label for="ОМС">ОМС</label>
-    </div>
+    <p>Выберите свои группы<sup>*</sup></p>
     <div class="c-filter">
-      <button class="c-filter__toggle">Проблемные, ОМС</button>
-      <ul class="c-filter__ul">
-        <li class="c-filter__item">
-          <input type="checkbox" id="1" class="multi"/>
-          <label tabindex="-1" for="1" class="multi">VIP</label>
+      <button class="c-filter toggle" @click="clickCheckBox">{{clientGroups[0]}} {{clientGroups[1]}} {{clientGroups[2]}}</button>
+      <ul class="c-filter ul" :class="active">
+        <li class="c-filter item">
+          <input type="checkbox" id="1" class="multi"  value="VIP" :class="{invalid: (!$v.clientGroups.required && $v.clientGroups.$dirty)}" v-model="clientGroups"/>
+          <label tabindex="-1" for="1" class="multi" >VIP</label>
         </li>
-        <li class="c-filter__item">
-          <input type="checkbox" id="2" class="multi"/>
+        <li class="c-filter item">
+          <input type="checkbox" id="2" class="multi" value="Проблемные" v-model="clientGroups"/>
           <label tabindex="-1" for="2" class="multi">Проблемные</label>
         </li>
-        <li class="c-filter__item">
-          <input type="checkbox" id="3" checked class="multi"/>
+        <li class="c-filter item">
+          <input type="checkbox" id="3" checked class="multi" value="ОМС" v-model="clientGroups"/>
           <label tabindex="-1" for="3" class="multi">ОМС</label>
         </li>
       </ul>
-    </div>
-    <input
-      class="none"
-      :class="{invalid: (!$v.clientGroups.required && $v.clientGroups.$dirty)}"
-      v-model="clientGroups"
-    />
+    </div>  
     <p>Выберите лечащего врача</p>
     <div class="classicField">
       <select v-model="attendingDoctor">
@@ -111,11 +98,9 @@
       <input type="checkbox" v-model="sms" true-value="да" false-value="нет" id="sms" />
       <label for="ОМС">Уведомление по СМС</label>
       <br />
-    </div>
+    </div>    
   </div>
 </template>
-
-<router-link to="/" class="button">Сохранить данные</router-link>
 
 <script>
 import {
@@ -126,17 +111,20 @@ import {
 } from "vuelidate/lib/validators";
 
 export default {
+  props: ['newClient'],
   name: "Basicdata",
   data: () => ({
     name: null,
     surname: null,
     patronymic: null,
     birthdate: null,
-    numberPhone: null,
+    numberPhone: 7,
     gender: null,
     clientGroups: [],
     attendingDoctor: null,
     sms: null,
+    onClick: false,
+    active: ''
   }),
   validations: {
     name: {
@@ -159,21 +147,50 @@ export default {
     },
   },
   methods: {
+    clickCheckBox() {
+      console.log(this.onClick)
+      if(this.onClick) {
+        this.active = '';
+        this.onClick = !this.onClick;
+      }
+      else {
+        this.active = 'active'
+        this.onClick = !this.onClick;
+      }
+    },
     numberPhoneStartWithSeven(num) {
       return +String(num).split("")[0] !== 7;
     },
     saveAndReturn() {
-      if (this.$v.$invalid) {
+      if (this.$v.$invalid || this.numberPhoneStartWithSeven(this.numberPhone)) {
         this.$v.$touch();
         return;
       }
+      let dataClient = {
+        name: this.name,
+        surname: this.surname,
+        patronymic: this.patronymic,
+        birthdate: this.birthdate,
+        numberPhone: this.numberPhone,
+        gender: this.gender,
+        clientGroups: this.clientGroups,
+        attendingDoctor: this.attendingDoctor,
+        sms: this.sms
+      };
+      this.$emit('changeDataOfNewClient', dataClient, 'basic');
       this.$router.push("/");
-    },
+    }
   },
 };
 </script>
 
 <style scoped>
+.smallText {
+  font-size: 12px;
+}
+sup {
+  background: white;
+}
 .none {
   display: none;
 }
@@ -198,6 +215,7 @@ p {
 input {
   margin: 0;
   padding: 0;
+  margin-right: 10px;
 }
 label {
   margin-right: 30px;
@@ -243,7 +261,8 @@ small {
   color: black;
 }
 .button {
-  margin-right: 30px;
+  margin-top: 700px;
+  margin-right: -50px;
   font-style: normal;
   font-weight: bold;
   padding: 10px 20px;
@@ -279,90 +298,81 @@ small {
   height: 60px;
 }
 
+.link {
+    padding: 0;
+    margin: 0 15px;
+    display: block;
+    height: 18px;
+    float: right;
+    font-size: 14px;
+    line-height: 17px;
+    text-decoration: none;  
+    letter-spacing: 1px;
+    color: rgba(31, 32, 65, 0.5);
+    background: white;
+}
+
+.link:hover { 
+    font-weight: bold;
+    letter-spacing: 0.4px;
+    color: rgba(31, 32, 65, 0.75);
+}
+
 .c-filter {
   position:relative;
+  background-color: transparent;
 }
-.c-filter__toggle {
-    width: 300px;
-    box-shadow:0 1px 2px 0 rgba(0,0,0,.05);
+.toggle {
+    position: relative;
+    width: 400px;
+    height: 40px;
     border:0;
-    padding:.5rem 1rem;
-    border-radius:4px;
+    border-radius:4px;    
+    border: 1px solid rgba(31, 32, 65, 0.25);    
+    color: rgba(31, 32, 65, 0.75);
+    font-size: 20px;
 }
-    
-.c-filter__toggle:after {
-      content:'';
-      width:10px;
-      height:10px;
-      display:inline-block;
-      margin-left:10px;
-      position:relative;
-      background-image: red;
-      background-repeat:no-repeat;
-      background-position:center;
-      float: right;
-      padding-top: 4px;
+.toggle::before {
+    position: absolute;
+    left: 380px;
+    top: 18px;
+    width: 7px;
+    height: 1.5px;
+    background-color: rgba(31, 32, 65);
+    content: '';
+    display: block;
+    transform: rotate(-45deg);
 }
-    
-.c-filter__toggle:active:after {
-  transform:rotate(180deg);
+
+.toggle::after {
+    position: absolute;
+    left: 376px;
+    top: 18px;
+    width: 7px;
+    height: 1.5px;
+    background-color: rgba(31, 32, 65);
+    content: '';
+    display: block;
+    transform: rotate(45deg);
 }
-.c-filter__ul {
+.ul {
     padding:0;
     border-radius:4px;
-    box-shadow:0 0 0 1px rgba(0,0,0,.05);
+    border: 1px solid rgba(31, 32, 65, 0.25);
     position:absolute;
     display:none;
     margin:0;
-}
-    
-.c-filter__ul:active {
+    background-color: white;
+}    
+.active {
       display:block;
     }
-.c-filter__item {
+.item {
     list-style:none;
     display:block;
-}
-   
-input .multi {
-      display:none;
-}
-
-input .multi:checked ~ label:before {
-        background-color:green;
-        border-color:lighten(green,10%);
-        background-image: red;
-        background-size:65%;
-        background-position:center center;
-        background-repeat:no-repeat;
-      }
-
-label .multi{
-      display:block;
-      padding:5px;
-      cursor:pointer;
-      padding:8px 8px 8px 35px;
-      position:relative;
-      width: 260px;
-}
-      
-label .multi:before {
-      content:'';
-      position:absolute;
-      top:50%;
-      transform:translateY(-50%);
-      left:10px;
-      width:15px;
-      height:15px;
-        border-radius:4px;
-      border:1px solid rgb(230,230,230);
-    }
-      
-label .multi:hover {
-        background-color:#f4f5f7;
-}
-        
-label .multi:hover:before {
-          border:1px solid rgb(200,200,200);
-        }
+    color: rgba(31, 32, 65, 0.75);
+    font-size: 20px;
+    padding: 5px 10px;
+    margin-left: 10px;
+}   
 </style>

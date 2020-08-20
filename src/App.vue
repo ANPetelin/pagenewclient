@@ -1,6 +1,11 @@
 <template>
   <div id="app">
-    <router-view/>
+    <router-view
+    :newClient="newClient"
+    :basic="basic"
+    :address="address"
+    :passport="passport"
+    @changeDataOfNewClient="changeDataOfNewClient"/>
   </div>
 </template>
 
@@ -8,11 +13,32 @@
 export default {
   data() {
     return {
-      newClient: {basic: {name: null, surname: null, patronymic: null, birthdate: null, 
-                  numberPhone: null, gender: null, clientGroups: [], attendingDoctor: null, sms: null}, 
-      addres:{}, passport:{}}
+      newClient: {basic: null, address: null, passport: null},
+      basic: false,
+      address: false,
+      passport: false
     };
   },
+  methods: {
+    changeDataOfNewClient(data, key) {
+      switch (key) {
+        case 'basic':
+          this.newClient.basic = data;
+          this.basic = true;
+          break;
+        case 'address':
+          this.newClient.address = data;
+          this.address = true;
+          break;
+        case 'passport':
+          this.newClient.passport = data;
+          this.passport = true;
+          break;
+        default:
+          break;
+      }
+    }
+  }
 };
 </script>
 
